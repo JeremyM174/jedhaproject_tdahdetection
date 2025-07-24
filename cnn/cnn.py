@@ -1,9 +1,8 @@
 import onnxruntime as ort
 import numpy as np
 import torchvision.transforms.v2 as transforms
-#from PIL import Image
 
-def cnn(pil_image):
+def get_emotion(pil_image):
     #list of emotion
     EMOTION_LABELS = ['Disconnection','Doubt/Confusion','Fatigue','Pain','Disquietment','Annoyance','others','adhd_emotion']
 
@@ -15,7 +14,6 @@ def cnn(pil_image):
     # image = Image.open(pil_image).convert("RGB")
 
     transform = transforms.Compose([
-        transforms.RGB(),
         transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
