@@ -1,9 +1,11 @@
 import onnxruntime as ort
 import numpy as np
 import torchvision.transforms.v2 as transforms
+import torchvision
+torchvision.disable_beta_transforms_warning()
 #from PIL import Image
 
-def getemotion(pil_image):
+def get_emotion(pil_image):
     #list of emotion
     EMOTION_LABELS = ['Disconnection','Doubt/Confusion','Fatigue','Pain','Disquietment','Annoyance','others','adhd_emotion']
 
