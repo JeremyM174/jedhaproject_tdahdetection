@@ -1,5 +1,5 @@
 import random
-def testrestitution(array):
-    listemotions = ["annoyance", "pain", "doubt", "disquietment", "fatigue", "disconnection", "other"]
+def testrestitution(pilimage):
+    listemotions = ["boredom", "engagement", "disengagement", "confusion", "frustration", "incertitude"]
     return random.choice(listemotions)
 #apres: recuperer emotions continues
