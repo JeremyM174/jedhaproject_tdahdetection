@@ -5,7 +5,7 @@ import torchvision.transforms.v2 as transforms
 def get_emotion(pil_image):
 
     # Charger le modèle ONNX
-    session = ort.InferenceSession(r"C:\Users\maria\Desktop\dsfs_ft_35\00_Projets_certif\bloc6_lead-data-project_finalproject\jedhaproject_tdahdetection\daisee_model.onnx")
+    session = ort.InferenceSession("daisee_model.onnx")
 
     transform = transforms.Compose([
         transforms.Resize(256),
