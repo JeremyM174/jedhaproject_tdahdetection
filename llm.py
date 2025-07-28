@@ -29,26 +29,20 @@ liste_system_templates = [chaleureux, reconfortant, energique, positif]
 
 boredom = "L’utilisateur semble s’ennuyer : produis une seule phrase d’encouragement pour l’aider à retrouver de l’intérêt dans sa tâche."
 
-engagement = "L’utilisateur paraît concentré et engagé : produis une seule phrase de félicitations pour renforcer sa motivation et son focus."
-
 disengagement = "L’utilisateur semble perdre de l’intérêt ou se détourner de sa tâche : produis une phrase courte et encourageante pour l’aider à se recentrer et retrouver sa motivation."
 
 confusion = "L’utilisateur semble confus : produis une seule phrase simple et claire pour l’aider à clarifier sa pensée et se recentrer."
 
 frustration = "L’utilisateur semble frustré : produis une seule phrase de soutien pour l’aider à lâcher prise et retrouver son calme."
 
-incertitude = "Une émotion semble présente, mais elle n’est pas clairement identifiable : propose une phrase courte, neutre et rassurante qui aide l’utilisateur à rester calme et concentré."
-
-liste_user_templates = [boredom, engagement, disengagement, confusion, frustration, incertitude]
+liste_user_templates = [boredom, disengagement, confusion, frustration]
 
 
 
 def match_emotion_response(emotion):
-    emotions = {"boredom" : boredom, "engagement" : engagement, "disengagement" : disengagement, "confusion" : confusion, "frustration" : frustration, "incertitude" : incertitude}
+    emotions = {"boredom" : boredom, "disengagement" : disengagement, "confusion" : confusion, "frustration" : frustration}
     if emotion in emotions:
         return emotions[emotion]
-    else:
-        raise ValueError("Unexpected prediction received from CNN")
     
 
 

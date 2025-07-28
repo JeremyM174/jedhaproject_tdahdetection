@@ -3,11 +3,16 @@ import cv2
 from PIL import Image
 import time
 from collections import deque, Counter
+import os
+from dotenv import load_dotenv
+import warnings
 
-import testcnn
+import cnn
 import llm
 
 # !!! remember to insert Mistral API key as environment variable !!!
+load_dotenv()
+warnings.filterwarnings("ignore")
 
 def showfps(frame, prev_frame_time):
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -19,8 +24,19 @@ def showfps(frame, prev_frame_time):
 
 def get_response_from_cnn(frame):
     pilimage = Image.fromarray(frame).convert("RGB")
-    cnnresponse = testcnn.testrestitution(pilimage)
-    return cnnresponse
+    cnn_predict = (cnn.get_emotion(pilimage))[0].tolist()
+    dict_cnn = {"boredom" : cnn_predict[0], "engagement" : cnn_predict[1], "confusion" : cnn_predict[2], "frustration" : cnn_predict[3]}
+    cnn_engagement = dict_cnn.pop("engagement")
+    cnn_bcf = max(dict_cnn.values())
+
+    if cnn_bcf > 2 and cnn_engagement >= 1:
+        return max(dict_cnn, key=dict_cnn.get)
+    elif cnn_engagement < 1:
+        return "disengagement"
+    else:
+        return "incertitude"
+
+
 
 def evaluate_response(history):
     return Counter(history).most_common(1)[0][0]
@@ -41,16 +57,16 @@ while( cap.isOpened() ):
         prev_frame_time = showfps(frame, prev_frame_time)
 
         cnnresponse = get_response_from_cnn(frame)
-        #print(cnnresponse)
-        ###stop calcul si exception
+        print(cnnresponse)
+        ###stop calcul
         history.append(cnnresponse)
 
         if len(history) == deq_len:
             action = evaluate_response(history)
 
-            if time.time() - last_action_time >= 10:
+            if time.time() - last_action_time >= 10 and not action=="incertitude":
                 last_action_time = time.time()
-                #print(action)
+                print(action)
                 message = llm.get_recommendation(action)
                 print(message)
 
