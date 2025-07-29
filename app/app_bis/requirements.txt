@@ -6,3 +6,5 @@ onnxruntime
 torchvision
 langchain_core
 langchain_mistralai
+streamlit
+streamlit-webrtc
