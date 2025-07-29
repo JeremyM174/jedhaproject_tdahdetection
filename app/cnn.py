@@ -1,20 +1,11 @@
 import onnxruntime as ort
 import numpy as np
 import torchvision.transforms.v2 as transforms
-import torchvision
-torchvision.disable_beta_transforms_warning()
-#from PIL import Image
 
 def get_emotion(pil_image):
-    #list of emotion
-    EMOTION_LABELS = ['Disconnection','Doubt/Confusion','Fatigue','Pain','Disquietment','Annoyance','others','adhd_emotion']
 
     # Charger le modèle ONNX
-    session = ort.InferenceSession("emotic_model.onnx")
-
-    # Charger et prétraiter une image
-    # image = pil_image.convert('RGB')
-    # image = Image.open(pil_image).convert("RGB")
+    session = ort.InferenceSession("daisee_model.onnx")
 
     transform = transforms.Compose([
         transforms.Resize(256),
@@ -29,13 +20,6 @@ def get_emotion(pil_image):
     # Faire une prédiction
     outputs = session.run(['output'], {'input': input_tensor})
     preds = outputs[0]
-    # Transformer la pred en list 
-    list_of_pred = preds[0].tolist()
-    # Find the first emotion without adhd_emotion
-    emotion = list_of_pred[0:-1].index(max(list_of_pred[0:-1]))
-    # get the result 
-    result = EMOTION_LABELS[emotion]
-    # print le result 
-    # print(result)
+    
 
-    return result
+    return preds
