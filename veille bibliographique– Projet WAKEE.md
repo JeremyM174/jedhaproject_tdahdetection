@@ -12,7 +12,7 @@ Le projet WAKEE s'appuie principalement sur le dataset **DAiSEE** (*Dataset for 
 - **Créateurs** : Gupta, D’Cunha, Awasthi, Balasubramanian (Indian Institute of Technology Hyderabad)
 - **Participants** : 112 individus filmés en conditions réelles
 - **Volume** : 9 068 vidéos (~25 heures de données)
-- **Étiquettes émotionnelles** :
+- **Étiquettes émotionnelles** : 
   - 4 émotions : Engagement, Ennui (Boredom), Confusion, Frustration
   - 4 niveaux d’intensité : Very Low, Low, High, Very High
   - Validation par des psychologues et annotations crowdsourcées
