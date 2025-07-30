@@ -1,0 +1,80 @@
+[theme]
+#"#4BE8E0" "#2A7FAF" "#015955"
+
+# Primary accent color.
+primaryColor ="#4b9ac7ff"
+
+# Background color of the app.
+backgroundColor ="#0E3449"
+
+# Background color used for most interactive widgets.
+secondaryBackgroundColor ="#23B1AB"
+
+# Color used for almost all text.
+textColor ="#9DD4F3"
+
+# Color used for all links.
+linkColor ="#97FBF6"
+
+
+# The font family for all text, except code blocks.
+#
+# This can be one of the following:
+# - "sans-serif"
+# - "serif"
+# - "monospace"
+# - The `family` value for a custom font table under [[theme.fontFaces]]
+# - A comma-separated list of these (as a single string) to specify
+#   fallbacks
+#
+# For example, you can use the following:
+#
+font = "cool-font, fallback-cool-font, sans-serif"
+
+
+# The radius used as basis for the corners of most UI elements.
+#
+# This can be one of the following:
+# - "none"
+# - "small"
+# - "medium"
+# - "large"
+# - "full"
+# - The number in pixels or rem.
+#
+# For example, you can use "10px", "0.5rem", or "2rem". To follow best
+# practices, use rem instead of pixels when specifying a numeric size.
+baseRadius = "large"
+
+# The radius used as basis for the corners of buttons.
+#
+# This can be one of the following:
+# - "none"
+# - "small"
+# - "medium"
+# - "large"
+# - "full"
+# - The number in pixels or rem.
+#
+# For example, you can use "10px", "0.5rem", or "2rem". To follow best
+# practices, use rem instead of pixels when specifying a numeric size.
+#
+# If this isn't set, Streamlit uses `theme.baseRadius` instead.
+buttonRadius = "large"
+
+# The color of the border around elements.
+borderColor ="#015955"
+
+# The color of the border around dataframes and tables.
+#
+# If this isn't set, Streamlit uses `theme.borderColor` instead.
+dataframeBorderColor ="#015955"
+
+# The background color of the dataframe's header.
+#
+# This color applies to all non-interior cells of the dataframe. This
+# includes the header row, the row-selection column (if present), and
+# the bottom row of data editors with a dynamic number of rows. If this
+# isn't set, Streamlit uses a mix of `theme.backgroundColor` and
+# `theme.secondaryBackgroundColor`.
+dataframeHeaderBackgroundColor ="#015955"
