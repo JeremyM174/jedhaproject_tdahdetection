@@ -75,7 +75,7 @@ while( cap.isOpened() ):
         if len(history) == deque_length:
             action = evaluate_response(history)
 
-            if time.time() - last_action_time >= 10 and not action=="incertitude":
+            if time.time() - last_action_time >= 10 and action!="incertitude":
                 last_action_time = time.time()
                 #print(action) #sanity check
                 message = llm.get_recommendation(action)
