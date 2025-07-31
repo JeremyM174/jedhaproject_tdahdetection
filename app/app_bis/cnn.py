@@ -19,9 +19,6 @@ def _load_model():
 
 def get_emotion(pil_image):
 
-    # # Charger le modèle ONNX
-    # session = ort.InferenceSession("daisee_model.onnx")
-
      # Charger le modèle si pas déjà fait (lazy loading)
     session = _load_model()
 
