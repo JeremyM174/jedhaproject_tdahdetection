@@ -66,7 +66,7 @@ The application will open automatically in your default browser.
 ### 📞 Contact
 - Albert ROMANO - [https://github.com/Ter0rra]
 - Asma RHALMI - [https://github.com/Cauliflaa]
-- Jeremy MARIAGE - [https://github.com/JeremyM174]
+- Jeremy MARIARGE - [https://github.com/JeremyM174]
 - Manon FAEDY - [https://github.com/ManonFAEDY]
 
 ---
