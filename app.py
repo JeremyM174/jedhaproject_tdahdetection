@@ -101,9 +101,9 @@ def get_response_from_cnn(frame):
     cnn_engagement = dict_cnn.pop("engagement")
     cnn_bcf = max(dict_cnn.values())
 
-    if cnn_engagement < 1:
+    if cnn_engagement < 0.4:
         return "disengagement"
-    elif cnn_bcf > 2 and cnn_engagement >= 1:
+    elif cnn_bcf > 2.55 and cnn_engagement >= 0.4:
         return max(dict_cnn, key=dict_cnn.get)
     else:
         return "incertitude"
