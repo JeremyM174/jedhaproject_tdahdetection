@@ -3,6 +3,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_mistralai import ChatMistralAI
 import random
 
+
+
 chaleureux = """Tu es une IA empathique conçue pour accompagner les adultes atteints de TDAH pendant leur travail.
 Lorsque tu détectes une émotion négative, tu donnes un petit message rassurant et motivant.
 Ton style est chaleureux, court (1-2 phrases), facile à lire et à comprendre.
@@ -23,7 +25,8 @@ Quand une émotion est détectée, tu réponds par un message court, valorisant 
 Ton style est clair, bienveillant, et chaque message est unique.
 Tu aides à retrouver confiance, calme ou focus avec 1-2 phrases maximum."""
 
-liste_system_templates = [chaleureux, reconfortant, energique, positif]
+system_templates = [chaleureux, reconfortant, energique, positif]
+# Templates above allow variation in LLM replies.
 
 
 
@@ -35,11 +38,10 @@ confusion = "L’utilisateur semble confus : produis une seule phrase simple et 
 
 frustration = "L’utilisateur semble frustré : produis une seule phrase de soutien pour l’aider à lâcher prise et retrouver son calme."
 
-liste_user_templates = [boredom, disengagement, confusion, frustration]
-
 
 
 def match_emotion_response(emotion):
+    """Replace received emotion from core script with a personnalized user message for LLM."""
     emotions = {"boredom" : boredom, "disengagement" : disengagement, "confusion" : confusion, "frustration" : frustration}
     if emotion in emotions:
         return emotions[emotion]
@@ -47,8 +49,8 @@ def match_emotion_response(emotion):
 
 
 def get_recommendation(emotion):
-
-    system_template = random.choice(liste_system_templates)
+    
+    system_template = random.choice(system_templates)
     prompt_template = ChatPromptTemplate.from_messages([
         ('system', system_template),
         ('user', '{text}')
