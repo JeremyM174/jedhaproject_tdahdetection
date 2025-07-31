@@ -7,14 +7,16 @@ import numpy as np
 import warnings
 from dotenv import load_dotenv
 
-import cnn  # ton module qui retourne les prédictions
-import llm  # ton module LLM
+import cnn
+import llm
+
 
 
 warnings.filterwarnings("ignore")
 load_dotenv()
 
-# --- La personnalisation du streamlit ---
+
+
 custom_css = """
 <style>
 /* Changer la couleur des titres H1 */
@@ -73,21 +75,25 @@ a {
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# --- Paramètres ---
+
+
 deque_length = 100
 history = deque([], maxlen=deque_length)
 last_action_time = time.time()
 FRAME_SKIP_SECONDS = 0.1
 prev_frame_time = 0
-frame_count = 0
+frame_count = 0 #TBA retrait ou non
 
-# === Fonctions ===
+
+
 def showfps(prev_time):
+    """Performance measurement; may serve later as guideline to restrict CNN input, in order to improve stability."""
     new_time = time.time()
     fps = 1 / (new_time - prev_time + 1e-8)
     return new_time, int(fps)
 
 def get_response_from_cnn(frame):
+    """Prepares camera capture to serve as input for the CNN; then translates CNN output (scores) into the detected emotion."""
     pilimage = Image.fromarray(frame).convert("RGB")
     cnn_predict = cnn.get_emotion(pilimage)[0].tolist()
     dict_cnn = {"boredom": cnn_predict[0], "engagement": cnn_predict[1],
@@ -103,12 +109,13 @@ def get_response_from_cnn(frame):
         return "incertitude"
 
 def evaluate_response(history):
+    """Extracts from the list of emotions the best representative, to prepare LLM input."""
     if not history:
         return "incertitude"
     return Counter(history).most_common(1)[0][0]
 
-# --- Définition de la fonction pour le slider à usage unique ---
 def single_use_slider(key_prefix: str = "default_slider", title: str = "Sélectionnez une valeur", options=None):
+    """Slider meant to define or revise projected work time using WAKEE."""
     if options is None:
         options = [f"{i:02d}:00" for i in range(24)]
 
@@ -138,17 +145,15 @@ def single_use_slider(key_prefix: str = "default_slider", title: str = "Sélecti
     return st.session_state[confirmed_key]
 
 
-# === Interface Streamlit ===
 
+# Streamlit parameters: titles/columns
 st.set_page_config(page_title="WAKEE", layout="wide")
 
-# Titres principaux centrés
 st.markdown("<h1 style='text-align: center; color: #4BE8E0;'>Je travaille avec WAKEE !</h1>", unsafe_allow_html=True)
 st.markdown("<h3 style='text-align: center; color: #23B1AB;'>Reconnaissance des émotions & Recommendation pour le TDAH 🧠</h3>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #FFFFFF;'>🤖 W.A.K.E.E. : Work Assistant with Kindness & Emotional Empathy 🤗</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Création des colonnes : une pour le choix du temps (col1) et une pour la caméra (col2)
 col1, col_spacer, col2 = st.columns([0.3, 0.05, 0.65])
 
 with col1:
@@ -166,13 +171,10 @@ with col1:
     if st.button('Réinitialiser & changer mon temps de travail'):
         st.session_state["time_selection_confirmed_value"] = None
         st.session_state["time_selection_disabled"] = False
-        # Réinitialise aussi le temps de début de la session pour la barre de progression
         st.session_state.start_time = None
         st.rerun()
 
-    # --- Barre de progression du temps de travail ---
-    st.markdown("<h3 style='text-align: center; color: #23B1AB;'>⌛ Temps écoulé</h3>", unsafe_allow_html=True)
-    # Placeholder pour la barre de progression et le texte associé
+    st.markdown("<h3 style='text-align: center; color: #23B1AB;'>⌛ Temps écoulé</h3>", unsafe_allow_html=True) # Progress bar
     progress_bar_placeholder = st.empty()
     progress_text_placeholder = st.empty()
 
@@ -182,19 +184,17 @@ with col2:
 
     start_button = st.toggle("Activer ma camera 🔴​")
 
-    # Containers dynamiques pour la caméra et les stats
     image_display = st.empty()
     stats_display = st.empty()
     emotion_display = st.empty()
 
-# --- Encart central pour Wakee ---
-col_left_center, col_center_content, col_right_center = st.columns([0.2, 0.6, 0.2])
+col_left_center, col_center_content, col_right_center = st.columns([0.2, 0.6, 0.2]) # WAKEE suggestion box
 
 with col_center_content:
     llm_container_placeholder = st.empty()
 
-# --- Fonction pour générer le HTML de l'encart Wakee ---
 def render_wakee_message_container(message: str):
+    """In-app HTML generator for suggestions."""
     return f"""
     <div class="wakee-message-container">
         <h3>💬 Suggestions de Wakee :</h3>
@@ -202,14 +202,13 @@ def render_wakee_message_container(message: str):
     </div>
     """
 
-# --- Logique de la caméra et du LLM ---
 
-# Initialisation du temps de début de la session dans st.session_state
+
+# Core script
 if "start_time" not in st.session_state:
     st.session_state.start_time = None
 
 if start_button:
-    # Si la caméra vient d'être activée, enregistre le temps de début
     if st.session_state.start_time is None:
         st.session_state.start_time = time.time()
         st.session_state.time_remaining_message_sent = False # Flag to send completion message once
@@ -218,11 +217,10 @@ if start_button:
     if not cap.isOpened():
         st.error("⚠️ Impossible d'accéder à la caméra.")
     else:
-        # Message initial au démarrage de la caméra
-        current_llm_message = "Prêt à t'aider ! J'analyse tes émotions et je t'aiderais au besoin 😊​"
+        base_message = "Prêt à t'aider ! J'analyse tes émotions et je t'aiderai au besoin 😊​"
+        current_llm_message = base_message
         llm_container_placeholder.markdown(render_wakee_message_container(f'💬 {current_llm_message}'), unsafe_allow_html=True)
 
-        # S'assurer que selected_time_confirmed est un nombre (convertir de string "XX")
         total_work_time_minutes = int(selected_time_confirmed) if selected_time_confirmed else 0
         total_work_time_seconds = total_work_time_minutes * 60
 
@@ -240,15 +238,13 @@ if start_button:
             emotion = get_response_from_cnn(rgb_frame)
             history.append(emotion)
 
-            # --- Mise à jour de la barre de progression ---
             elapsed_time_seconds = time.time() - st.session_state.start_time
             
             if total_work_time_seconds > 0:
                 progress_percentage = min(elapsed_time_seconds / total_work_time_seconds, 1.0)
             else:
-                progress_percentage = 0.0 # Si 0 minutes sont choisies, la progression reste à 0
+                progress_percentage = 0.0
 
-            # Mettre à jour la barre et le texte
             progress_bar_placeholder.progress(progress_percentage)
             
             remaining_seconds = max(0, total_work_time_seconds - elapsed_time_seconds)
@@ -257,18 +253,15 @@ if start_button:
             
             progress_text_placeholder.text(f"Temps restant : {mins:02d}m {secs:02d}s")
 
-            # Condition pour vérifier si le temps est écoulé
             if elapsed_time_seconds >= total_work_time_seconds and total_work_time_seconds > 0 and not st.session_state.time_remaining_message_sent:
                 llm_container_placeholder.markdown(render_wakee_message_container("Félicitations ! Votre temps de travail est terminé. Prenez une pause bien méritée ! 🎉"), unsafe_allow_html=True)
-                st.session_state.time_remaining_message_sent = True # Empêche le message de se répéter
+                st.session_state.time_remaining_message_sent = True # Prevents message repetition
 
-            # Affichage de l'image et des stats dans les colonnes de la caméra
             with col2:
                 image_display.image(rgb_frame, channels="RGB")
                 stats_display.markdown(f"**🧮 Frame :** {frame_count}  |  **⚡ FPS :** {fps}")
                 emotion_display.markdown(f"**🧠 Dernière émotion détectée :** `{emotion}`")
 
-            # Détection LLM et mise à jour de l'encart central
             if len(history) == deque_length:
                 action = evaluate_response(history)
                 history.clear()
@@ -278,40 +271,33 @@ if start_button:
                     message = llm.get_recommendation(action)
                     current_llm_message = message
                 elif action == "incertitude":
-                    current_llm_message = "Je ne suis pas sûr de ce que tu ressens. Continue !"
-                else:
-                    current_llm_message = "Tout va bien pour l'instant ! 😎​"
+                    current_llm_message = base_message
 
-            # Mise à jour du placeholder de l'encart complet (sauf si le message de fin a été envoyé)
             if not st.session_state.get("time_remaining_message_sent", False):
                 llm_container_placeholder.markdown(render_wakee_message_container(f'{current_llm_message}'), unsafe_allow_html=True)
 
             time.sleep(FRAME_SKIP_SECONDS)
 
         cap.release()
-else: # Si la caméra est désactivée
+else: # Reseting all parameters when camera is turned off
     image_display.empty()
     stats_display.empty()
     emotion_display.empty()
     
-    # Réinitialise la barre de progression et le texte
     progress_bar_placeholder.progress(0)
     progress_text_placeholder.text("Temps restant : 00m 00s")
     
-    # Réinitialise le temps de début de la session
     st.session_state.start_time = None
     st.session_state.time_remaining_message_sent = False
 
-    # Afficher le message initial dans l'encart quand la caméra n'est pas activée
     llm_container_placeholder.markdown(render_wakee_message_container("Démarre ta session en activant la caméra ci-dessus ⬆️​ 👍​"), unsafe_allow_html=True)
 
-# --- Section Crédits ---
-st.markdown("---")
+st.markdown("---") # Credits
 st.markdown(
     """
     <div style="text-align: center; margin-top: 50px; color: #CCCCCC;">
         <p>Développé avec 💙 par :</p>
-        <p><strong> Albert ROMANO, Asma RHALMI, Jeremy MARIARGE, Manon FAEDY </strong></p>
+        <p><strong> Albert ROMANO, Asma RHALMI, Jeremy MARIAGE, Manon FAEDY </strong></p>
     </div>
     """,
     unsafe_allow_html=True
