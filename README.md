@@ -30,7 +30,7 @@ cd jedhaproject_tdahdetection
 ```bash
 python -m venv venv
 # On Windows
-.env\Scriptsctivate
+.\venv\Scripts\activate
 # On macOS/Linux
 source venv/bin/activate
 ```
@@ -77,13 +77,13 @@ WAKEE is primarily based on the **DAiSEE dataset** (*Dataset for Affective State
 
 ### 🧾 Dataset Details
 - **Creators:** Gupta, D’Cunha, Awasthi, Balasubramanian (Indian Institute of Technology Hyderabad)  
-- **Participants:** 112 individuals filmed in real conditions  
-- **Volume:** 9,068 videos (~25 hours of data)  
+- **Participants:** 112 individuals observed in real conditions  
+- **Volume:** 7919 images  
 - **Emotions:** Engagement, Boredom, Confusion, Frustration (4 intensity levels: Very Low, Low, High, Very High)  
 - **Validation:** Labels confirmed by psychologists and crowdsourcing.  
 - **Links:**  
   - [Arxiv Publication](https://arxiv.org/abs/1609.01885)  
-  - [Kaggle Dataset](https://www.kaggle.com/datasets/olgaparfenova/daisee)  
+  - [Kaggle Dataset](https://www.kaggle.com/datasets/johnykletka12348/daiseecvproject)  
 
 📖 **APA Reference:** Gupta, A., D’Cunha, A., Awasthi, K., & Balasubramanian, V. (2016). *DAiSEE: Towards User Engagement Recognition in the Wild*. arXiv preprint arXiv:1609.01885.
 
@@ -122,7 +122,7 @@ WAKEE was developed in **Python 3.11.13** with the following key libraries:
 
 A big thank you to:
 - The researchers at the **Indian Institute of Technology Hyderabad** for creating the **DAiSEE** dataset.  
-- **Olga Parfenova** for making the dataset available on Kaggle.  
+- **johnykletka12348** for making the dataset available on Kaggle.  
 - The contributors of **OpenCV**, **PyTorch**, **LangChain**, and other open-source tools used.  
 - The instructors and mentors of the **Jedha Bootcamp** for their support and guidance.
 
