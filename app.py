@@ -88,15 +88,21 @@ def get_response_from_cnn(frame):
     """Prepares camera capture to serve as input for the CNN; then translates CNN output (scores) into the detected emotion."""
     pilimage = Image.fromarray(frame).convert("RGB")
     cnn_predict = cnn.get_emotion(pilimage)[0].tolist()
-    dict_cnn = {"boredom": cnn_predict[0], "engagement": cnn_predict[1],
-                "confusion": cnn_predict[2], "frustration": cnn_predict[3]}
-    cnn_engagement = dict_cnn.pop("engagement")
-    cnn_bcf = max(dict_cnn.values())
+    dict_cnn = {"boredom": cnn_predict[0], "confusion": cnn_predict[1],
+                "engagement": cnn_predict[2], "frustration": cnn_predict[3]}
+    cnn_engagement = dict_cnn["engagement"]
+    cnn_boredom = dict_cnn["boredom"]
+    cnn_confusion = dict_cnn["confusion"]
+    cnn_frustration = dict_cnn["frustration"]
 
-    if cnn_engagement < 0.4:
+    if cnn_engagement < 1:
         return "disengagement"
-    elif cnn_bcf > 2.55 and cnn_engagement >= 0.4:
-        return max(dict_cnn, key=dict_cnn.get)
+    elif cnn_frustration > 0.5:
+        return "frustration"
+    elif cnn_confusion > 0.61:
+        return "confusion"
+    elif cnn_boredom > 1.05:
+        return "boredom"
     else:
         return "incertitude"
 

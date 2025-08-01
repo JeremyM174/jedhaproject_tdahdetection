@@ -34,15 +34,21 @@ def get_response_from_cnn(frame):
 
     pilimage = Image.fromarray(frame).convert("RGB")
     cnn_predict = (cnn.get_emotion(pilimage))[0].tolist()
-    #print(cnn_predict) #sanity check
-    dict_cnn = {"boredom" : cnn_predict[0], "engagement" : cnn_predict[1], "confusion" : cnn_predict[2], "frustration" : cnn_predict[3]}
-    cnn_engagement = dict_cnn.pop("engagement")
-    cnn_bcf = max(dict_cnn.values())
+    print(cnn_predict) #sanity check
+    dict_cnn = {"boredom" : cnn_predict[0], "confusion" : cnn_predict[1], "engagement" : cnn_predict[2], "frustration" : cnn_predict[3]}
+    cnn_engagement = dict_cnn["engagement"]
+    cnn_boredom = dict_cnn["boredom"]
+    cnn_confusion = dict_cnn["confusion"]
+    cnn_frustration = dict_cnn["frustration"]
 
     if cnn_engagement < 1:
         return "disengagement"
-    elif cnn_bcf > 2 and cnn_engagement >= 1:
-        return max(dict_cnn, key=dict_cnn.get)
+    elif cnn_frustration > 0.5:
+        return "frustration"
+    elif cnn_confusion > 0.61:
+        return "confusion"
+    elif cnn_boredom > 1.05:
+        return "boredom"
     else:
         return "incertitude"
 
@@ -69,7 +75,7 @@ while( cap.isOpened() ):
         prev_frame_time = showfps(frame, prev_frame_time)
 
         cnnresponse = get_response_from_cnn(frame)
-        #print(cnnresponse) #sanity check
+        print(cnnresponse) #sanity check
         history.append(cnnresponse)
 
         if len(history) == deque_length:
@@ -77,9 +83,9 @@ while( cap.isOpened() ):
 
             if time.time() - last_action_time >= 10 and action!="incertitude":
                 last_action_time = time.time()
-                #print(action) #sanity check
-                message = llm.get_recommendation(action)
-                print(message)
+                print("action deque:", action) #sanity check
+                #message = llm.get_recommendation(action)
+                #print(message)
 
         cv2.imshow('frame' , frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
