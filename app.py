@@ -10,12 +10,8 @@ from dotenv import load_dotenv
 import cnn
 import llm
 
-
-
 warnings.filterwarnings("ignore")
 load_dotenv()
-
-
 
 custom_css = """
 <style>
@@ -75,16 +71,12 @@ a {
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-
-
 deque_length = 100
 history = deque([], maxlen=deque_length)
 last_action_time = time.time()
 FRAME_SKIP_SECONDS = 0.1
 prev_frame_time = 0
 frame_count = 0 #TBA retrait ou non
-
-
 
 def showfps(prev_time):
     """Performance measurement; may serve later as guideline to restrict CNN input, in order to improve stability."""
@@ -144,6 +136,14 @@ def single_use_slider(key_prefix: str = "default_slider", title: str = "Sélecti
 
     return st.session_state[confirmed_key]
 
+def render_wakee_message_container(message: str):
+    """In-app HTML generator for suggestions."""
+    return f"""
+    <div class="wakee-message-container">
+        <h3>💬 Suggestions de Wakee :</h3>
+        <p class="llm-output-text">{message}</p>
+    </div>
+    """
 
 
 # Streamlit parameters: titles/columns
@@ -154,7 +154,8 @@ st.markdown("<h3 style='text-align: center; color: #23B1AB;'>Reconnaissance des 
 st.markdown("<p style='text-align: center; color: #FFFFFF;'>🤖 W.A.K.E.E. : Work Assistant with Kindness & Emotional Empathy 🤗</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-col1, col_spacer, col2 = st.columns([0.3, 0.05, 0.65])
+# Utilisation de 3 colonnes avec la colonne du milieu plus large
+col1, col2, col3 = st.columns([1, 2, 1])
 
 with col1:
     st.markdown("<h3 style='text-align: center; color: #23B1AB;'>⏱️ Choix du temps de travail</h3>", unsafe_allow_html=True)
@@ -178,9 +179,9 @@ with col1:
     progress_bar_placeholder = st.empty()
     progress_text_placeholder = st.empty()
 
-    st.image("WAKEE_image.png", use_container_width=True)
-
-
+    if st.button('Arrêter l\'application', type="primary"):
+        st.warning("Application arrêtée. Pour redémarrer, relancez le script.")
+        st.stop()
 
 with col2:
     st.markdown("<h3 style='text-align: center; color: #23B1AB;'>🎥 Ma camera</h3>", unsafe_allow_html=True)
@@ -191,21 +192,10 @@ with col2:
     stats_display = st.empty()
     emotion_display = st.empty()
 
-col_left_center, col_center_content, col_right_center = st.columns([0.2, 0.6, 0.2]) # WAKEE suggestion box
-
-with col_center_content:
+with col3:
     llm_container_placeholder = st.empty()
-
-def render_wakee_message_container(message: str):
-    """In-app HTML generator for suggestions."""
-    return f"""
-    <div class="wakee-message-container">
-        <h3>💬 Suggestions de Wakee :</h3>
-        <p class="llm-output-text">{message}</p>
-    </div>
-    """
-
-
+    # L'image de WAKEE est maintenant ici
+    st.image("WAKEE_image.png", use_container_width=True)
 
 # Core script
 if "start_time" not in st.session_state:
@@ -275,7 +265,7 @@ if start_button:
                     current_llm_message = message
                 elif action == "incertitude":
                     current_llm_message = base_message
-
+            
             if not st.session_state.get("time_remaining_message_sent", False):
                 llm_container_placeholder.markdown(render_wakee_message_container(f'{current_llm_message}'), unsafe_allow_html=True)
 
@@ -283,17 +273,21 @@ if start_button:
 
         cap.release()
 else: # Reseting all parameters when camera is turned off
-    image_display.empty()
-    stats_display.empty()
-    emotion_display.empty()
+    with col2:
+        image_display.empty()
+        stats_display.empty()
+        emotion_display.empty()
     
-    progress_bar_placeholder.progress(0)
-    progress_text_placeholder.text("Temps restant : 00m 00s")
+    with col1:
+        progress_bar_placeholder.progress(0)
+        progress_text_placeholder.text("Temps restant : 00m 00s")
     
     st.session_state.start_time = None
     st.session_state.time_remaining_message_sent = False
 
-    llm_container_placeholder.markdown(render_wakee_message_container("Démarre ta session en activant la caméra ci-dessus ⬆️​ 👍​"), unsafe_allow_html=True)
+    with col3:
+        llm_container_placeholder.markdown(render_wakee_message_container("Démarre ta session en activant la caméra 👍​"), unsafe_allow_html=True)
+
 
 st.markdown("---") # Credits
 st.markdown(
